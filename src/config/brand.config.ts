@@ -25,9 +25,7 @@ export const brandConfig = {
   },
 
   contact: {
-    // TODO: real support email must be configured before launch.
-    // Do not use a placeholder address in production.
-    supportEmail: "",
+    supportEmail: "vernyq.support@gmail.com",
   },
 
   seo: {
