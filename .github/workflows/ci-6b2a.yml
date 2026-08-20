@@ -2,7 +2,8 @@ name: CI - 6B-2A Validation
 
 on:
   push:
-    branches: ['**']
+    branches:
+      - main
   workflow_dispatch: {}
 
 jobs:
@@ -16,10 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 24
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: '24'
 
       - name: Install dependencies
         run: npm install
