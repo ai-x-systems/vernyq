@@ -10,7 +10,6 @@
     "typecheck": "tsc --noEmit",
     "seed": "tsx prisma/seed.ts",
     "prisma:generate": "prisma generate",
-    "test": "vitest"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
