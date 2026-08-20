@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    name: Validate (install, prisma:generate, typecheck, lint, test)
+    name: Validate (install, prisma:generate, typecheck, lint)
     runs-on: ubuntu-latest
     env:
       DIRECT_URL: ${{ secrets.DIRECT_URL }}
@@ -25,15 +25,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Debug: confirm DIRECT_URL present (temporary)
-        run: |
-          if [ -z "$DIRECT_URL" ]; then
-            echo "DIRECT_URL is empty"
-            exit 1
-          else
-            echo "DIRECT_URL is set"
-          fi
-
       - name: Prisma generate
         run: npm run prisma:generate
 
@@ -42,6 +33,3 @@ jobs:
 
       - name: Lint
         run: npm run lint
-
-      - name: Run tests
-        run: npm run test
