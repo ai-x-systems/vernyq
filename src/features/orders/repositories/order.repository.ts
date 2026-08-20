@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import type { OrderStatus } from "@/generated/prisma/enums";
 
 /**
  * All repository queries MUST be scoped by brandId for multi-tenant safety.
@@ -18,11 +18,11 @@ export const orderRepository = {
   create: (data: Parameters<typeof prisma.order.create>[0]["data"]) =>
     prisma.order.create({ data }),
 
-  appendStatusEvent: (orderId: string, status: Prisma.OrderStatus | string, note?: string) =>
+  appendStatusEvent: (orderId: string, status: OrderStatus | string, note?: string) =>
     prisma.orderStatusEvent.create({
       data: { orderId, status: status as any, note },
     }),
 
-  updateStatus: (orderId: string, status: Prisma.OrderStatus | string) =>
+  updateStatus: (orderId: string, status: OrderStatus | string) =>
     prisma.order.update({ where: { id: orderId }, data: { status: status as any } }),
 };
