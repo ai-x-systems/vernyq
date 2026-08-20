@@ -1,0 +1,36 @@
+name: CI - 6B-2A Validation
+
+on:
+  push:
+    # Run on pushes so the workflow runs for the current branch commit
+    branches: ['**']
+  workflow_dispatch: {}
+
+jobs:
+  validate:
+    name: Validate (install, prisma:generate, typecheck, lint, test)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prisma generate
+        run: npm run prisma:generate
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test
