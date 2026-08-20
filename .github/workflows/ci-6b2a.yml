@@ -8,10 +8,8 @@ on:
 
 jobs:
   validate:
-    name: Validate (install, prisma:generate, typecheck, lint)
+    name: Validate (install, typecheck, lint)
     runs-on: ubuntu-latest
-    env:
-      DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
     steps:
       - name: Checkout
@@ -24,9 +22,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      - name: Prisma generate
-        run: npm run prisma:generate
 
       - name: Typecheck
         run: npm run typecheck
