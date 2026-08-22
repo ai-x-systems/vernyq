@@ -7,22 +7,26 @@ import type { OrderStatus } from "@/generated/prisma/enums";
  * queries where appropriate to avoid accidental cross-tenant access.
  */
 export const orderRepository = {
-  getById: (id: string) => prisma.order.findUnique({ where: { id } }),
+  getById: (brandId: string, id: string) =>
+    prisma.order.findFirst({ where: { id, brandId } }),
 
-  getByIdWithPayments: (id: string) =>
-    prisma.order.findUnique({
-      where: { id },
+  getByIdWithPayments: (brandId: string, id: string) =>
+    prisma.order.findFirst({
+      where: { id, brandId },
       include: { payments: true, items: true, statusHistory: true },
     }),
 
   create: (data: Parameters<typeof prisma.order.create>[0]["data"]) =>
     prisma.order.create({ data }),
 
-  appendStatusEvent: (orderId: string, status: OrderStatus | string, note?: string) =>
+  appendStatusEvent: (orderId: string, status: OrderStatus, note?: string) =>
     prisma.orderStatusEvent.create({
-      data: { orderId, status: status as any, note },
+      data: { orderId, status, note },
     }),
 
-  updateStatus: (orderId: string, status: OrderStatus | string) =>
-    prisma.order.update({ where: { id: orderId }, data: { status: status as any } }),
+  updateStatus: (brandId: string, orderId: string, status: OrderStatus) =>
+    prisma.order.updateMany({
+      where: { id: orderId, brandId },
+      data: { status },
+    }),
 };
