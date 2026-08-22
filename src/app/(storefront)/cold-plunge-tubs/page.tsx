@@ -4,6 +4,13 @@ import { getStorefrontProductList } from "@/features/catalog/services/product.se
 import { ProductCard } from "../_components/product-card";
 import { brandConfig } from "@/config/brand.config";
 
+// This page reads live product data (status, price, availability) from the
+// database. It must never be statically prerendered/cached at build time —
+// an admin flipping a product DRAFT -> ACTIVE must be reflected immediately,
+// not only on the next deploy. Also avoids the build failing when the
+// database isn't reachable from the build environment.
+export const dynamic = "force-dynamic";
+
 const PAGE_TITLE = "Cold Plunge Tubs";
 const PAGE_DESCRIPTION =
   "Browse Vernyq's cold plunge tubs — all-in-one heating-and-cooling systems built for a daily recovery ritual at home.";
