@@ -31,53 +31,53 @@ export class OrderService {
     }
   }
 
-  async transitionOrder(orderId: string, nextStatus: OrderStatus, note?: string) {
-    const order = await orderRepository.getById(orderId);
+  async transitionOrder(brandId: string, orderId: string, nextStatus: OrderStatus, note?: string) {
+    const order = await orderRepository.getById(brandId, orderId);
     if (!order) throw new Error("Order not found");
 
     // DB model type may be broader/nullable; cast here after presence check.
     const currentStatus = order.status as OrderStatus;
     await this.validateTransition(currentStatus, nextStatus);
 
-    await orderRepository.updateStatus(orderId, nextStatus);
+    await orderRepository.updateStatus(brandId, orderId, nextStatus);
     await orderRepository.appendStatusEvent(orderId, nextStatus, note);
-    return orderRepository.getByIdWithPayments(orderId);
+    return orderRepository.getByIdWithPayments(brandId, orderId);
   }
 
   // convenience methods
-  async markPaymentVerified(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "PAID", note);
+  async markPaymentVerified(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "PAID", note);
   }
 
-  async cancelOrder(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "CANCELLED", note);
+  async cancelOrder(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "CANCELLED", note);
   }
 
-  async startProcessing(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "PROCESSING", note);
+  async startProcessing(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "PROCESSING", note);
   }
 
-  async markReadyForFulfillment(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "READY_FOR_FULFILLMENT", note);
+  async markReadyForFulfillment(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "READY_FOR_FULFILLMENT", note);
   }
 
-  async markSupplierOrderPending(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "SUPPLIER_ORDER_PENDING", note);
+  async markSupplierOrderPending(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "SUPPLIER_ORDER_PENDING", note);
   }
 
-  async markSupplierOrdered(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "SUPPLIER_ORDERED", note);
+  async markSupplierOrdered(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "SUPPLIER_ORDERED", note);
   }
 
-  async markShipped(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "SHIPPED", note);
+  async markShipped(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "SHIPPED", note);
   }
 
-  async markDelivered(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "DELIVERED", note);
+  async markDelivered(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "DELIVERED", note);
   }
 
-  async refundOrder(orderId: string, note?: string) {
-    return this.transitionOrder(orderId, "REFUNDED", note);
+  async refundOrder(brandId: string, orderId: string, note?: string) {
+    return this.transitionOrder(brandId, orderId, "REFUNDED", note);
   }
 }
