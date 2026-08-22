@@ -13,6 +13,12 @@ vi.mock("@/lib/prisma", () => ({
     orderStatusEvent: {
       create: vi.fn(),
     },
+    orderPayment: {
+      create: vi.fn(),
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      updateMany: vi.fn(),
+    },
   },
 }));
 
@@ -59,5 +65,86 @@ describe("orderRepository brand isolation", () => {
     expect(calls[0][0]).toEqual({ where: { id: "order-1", brandId: "brand-a" } });
     expect(calls[1][0]).toEqual({ where: { id: "order-1", brandId: "brand-b" } });
     expect(calls[0][0]).not.toEqual(calls[1][0]);
+  });
+});
+
+describe("orderRepository OrderPayment data access", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("createPayment writes the given method to provider, brand-scoped", async () => {
+    await orderRepository.createPayment({
+      brandId: "brand-a",
+      orderId: "order-1",
+      amountCents: 600000,
+      provider: "bank_transfer",
+    });
+
+    expect(prisma.orderPayment.create).toHaveBeenCalledWith({
+      data: {
+        brandId: "brand-a",
+        orderId: "order-1",
+        amountCents: 600000,
+        provider: "bank_transfer",
+      },
+    });
+  });
+
+  it("createPayment accepts manual_payment_request as the other valid method", async () => {
+    await orderRepository.createPayment({
+      brandId: "brand-a",
+      orderId: "order-1",
+      amountCents: 600000,
+      provider: "manual_payment_request",
+    });
+
+    expect(prisma.orderPayment.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ provider: "manual_payment_request" }) })
+    );
+  });
+
+  it("getPaymentById always includes brandId in the where clause", async () => {
+    await orderRepository.getPaymentById("brand-a", "payment-1");
+
+    expect(prisma.orderPayment.findFirst).toHaveBeenCalledWith({
+      where: { id: "payment-1", brandId: "brand-a" },
+    });
+  });
+
+  it("getPaymentsForOrder always includes brandId in the where clause", async () => {
+    await orderRepository.getPaymentsForOrder("brand-a", "order-1");
+
+    expect(prisma.orderPayment.findMany).toHaveBeenCalledWith({
+      where: { orderId: "order-1", brandId: "brand-a" },
+      orderBy: { createdAt: "asc" },
+    });
+  });
+
+  it("updatePaymentStatus scopes the update by both id and brandId", async () => {
+    await orderRepository.updatePaymentStatus("brand-a", "payment-1", "PAID");
+
+    expect(prisma.orderPayment.updateMany).toHaveBeenCalledWith({
+      where: { id: "payment-1", brandId: "brand-a" },
+      data: { status: "PAID" },
+    });
+  });
+
+  it("updatePaymentStatus includes verifiedAt and providerReference only when provided", async () => {
+    const verifiedAt = new Date("2026-08-22T00:00:00.000Z");
+
+    await orderRepository.updatePaymentStatus("brand-a", "payment-1", "PAID", {
+      verifiedAt,
+      providerReference: "manual-verification-by-admin",
+    });
+
+    expect(prisma.orderPayment.updateMany).toHaveBeenCalledWith({
+      where: { id: "payment-1", brandId: "brand-a" },
+      data: {
+        status: "PAID",
+        verifiedAt,
+        providerReference: "manual-verification-by-admin",
+      },
+    });
   });
 });
