@@ -96,22 +96,29 @@ body {
   DB-editable field, these become the seed values for that row rather
   than a second source of truth.
 
-  Values below implement the "Atmospheric Minimalism" design system
-  (Stitch export, Aug 2026) — see design/ for the full source spec.
-  Replaces the earlier teal-accent palette (R1 of the full-site restyle).
+  Values below match the official Vernyq brand identity: logo Variant 2
+  (Icon + Wordmark), Frost Navy colorway, confirmed via the logo variant
+  board and the re-themed vernyq-recovery-hub reference (both agree
+  exactly: Frost Navy #0A182E / Ice Blue #0084FF). Supersedes both the
+  earlier Stitch-based palette and the interim recovery-hub palette.
 */
 :root {
-  --brand-ink: #121212; /* near-black — primary text, primary buttons */
-  --brand-frost: #f9f8f6; /* warm white — base background */
-  --brand-frost-dim: #ddd9d8; /* soft stone — tonal layering / secondary bg */
-  --brand-steel: #5e5e5d; /* secondary text on frost */
-  --brand-line: #c4c7c7; /* hairline borders */
-  /* Arctic Blue — the ONLY chromatic accent. Reserved for interactive
-     states (focus rings, hover accents, sparing CTA emphasis) per the
-     design system's explicit rule — never used as general label/body
-     text color, since it fails contrast on white at that role anyway. */
-  --brand-accent: #b0c4de;
-  --brand-accent-soft: #e5e4e2; /* soft stone container background */
+  --brand-ink: #0a182e; /* Frost Navy — primary text, primary buttons */
+  --brand-frost: #faf9f7; /* base background */
+  --brand-frost-dim: #f3f1ee; /* surface — tonal layering / secondary bg */
+  --brand-frost-dimmer: #eae7e2; /* surface-alt — one step further */
+  --brand-steel: #555555; /* secondary text */
+  --brand-muted: #888888; /* tertiary/muted text */
+  --brand-line: #e0ddd8; /* hairline borders */
+  /* Ice Blue — the official accent color. Measured contrast on white/
+     frost is ~3.5-3.7:1 — passes WCAG AA for large text (18px+/bold
+     14px+), icons, borders, and focus rings, but FAILS AA for small
+     regular-weight body text. Fine for the overline/label-sm/price
+     treatments below (bold + letter-spaced), links, and CTA
+     backgrounds — pair with --brand-ink for anything smaller. */
+  --brand-accent: #0084ff;
+  --brand-accent-light: #3399ff;
+  --brand-accent-soft: #f3f1ee; /* soft container background */
 }
 
 /* Typography scale from the design system — exposed as theme tokens so
