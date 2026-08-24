@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
-import { brandConfig } from "@/config/brand.config";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Menu, X, ShoppingBag, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { VernyqLogo } from "@/components/ui/logo";
 
 // Nav destinations match the site map already planned in the Phase 1
 // architecture doc. Several of these routes don't have content yet
@@ -14,65 +15,132 @@ const navItems = [
   { label: "Shop", href: "/cold-plunge-tubs" },
   { label: "Science", href: "/science" },
   { label: "About", href: "/about" },
+  { label: "Journal", href: "/blog" },
   { label: "FAQ", href: "/faq" },
-  { label: "Contact", href: "/contact" },
 ];
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--brand-line)] bg-[var(--brand-frost)]/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link
-          href="/"
-          className="font-mono text-[15px] font-medium tracking-tight text-[var(--brand-ink)]"
-        >
-          {brandConfig.name}
-        </Link>
-
-        <nav className="hidden items-center gap-8 md:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-[13px] font-medium text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-label="Toggle menu"
-          className="flex h-9 w-9 items-center justify-center text-[var(--brand-ink)] md:hidden"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
-      <div
+    <>
+      <header
         className={cn(
-          "overflow-hidden border-t border-[var(--brand-line)] transition-[max-height] duration-300 ease-out md:hidden",
-          open ? "max-h-64" : "max-h-0 border-t-0",
+          "sticky top-0 z-50 transition-all duration-300",
+          scrolled
+            ? "border-b border-[var(--brand-line)] bg-[var(--brand-frost)]/95 backdrop-blur-md"
+            : "bg-[var(--brand-frost)]/80 backdrop-blur-sm",
         )}
       >
-        <nav className="flex flex-col gap-1 px-6 py-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="py-2 text-[15px] font-medium text-[var(--brand-ink)]"
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between lg:h-18">
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              aria-label="Toggle menu"
+              className="-ml-2 p-2 text-[var(--brand-ink)] transition-colors hover:text-[var(--brand-steel)] lg:hidden"
             >
-              {item.label}
+              {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
+
+            <nav className="hidden items-center gap-8 lg:flex">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "text-body-sm font-medium transition-colors hover:text-[var(--brand-ink)]",
+                    pathname === item.href ? "text-[var(--brand-ink)]" : "text-[var(--brand-steel)]",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <Link
+              href="/"
+              className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0"
+            >
+              <VernyqLogo variant="full" color="dark" className="h-9 lg:h-10" />
             </Link>
-          ))}
-        </nav>
-      </div>
-    </header>
+
+            <div className="flex items-center gap-3 lg:gap-6">
+              <button
+                type="button"
+                aria-label="Search"
+                className="hidden p-2 text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)] lg:block"
+              >
+                <Search className="size-5" />
+              </button>
+
+              {/* Cart is visual-only until the cart phase wires up real
+                  item state — intentionally shows no badge/count yet
+                  rather than a fake number. */}
+              <Link
+                href="/cart"
+                aria-label="Cart"
+                className="relative p-2 text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
+              >
+                <ShoppingBag className="size-5" />
+              </Link>
+
+              <Link
+                href="/cold-plunge-tubs"
+                className="hidden h-9 items-center justify-center rounded-[0.5rem] bg-[var(--brand-accent)] px-5 text-body-sm font-medium text-white shadow-sm transition-colors hover:opacity-90 lg:inline-flex"
+              >
+                Shop Cold Plunges
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {open && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/20"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute left-0 right-0 top-16 z-50 border-b border-[var(--brand-line)] bg-[var(--brand-frost)] shadow-lg">
+            <nav className="flex flex-col py-4">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "px-6 py-3 text-body font-medium transition-colors",
+                    pathname === item.href
+                      ? "bg-[var(--brand-frost-dim)] text-[var(--brand-ink)]"
+                      : "text-[var(--brand-steel)] hover:bg-[var(--brand-frost-dim)]/50",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <div className="mt-2 border-t border-[var(--brand-line)] px-6 pt-2">
+                <Link
+                  href="/cold-plunge-tubs"
+                  onClick={() => setOpen(false)}
+                  className="flex h-11 w-full items-center justify-center rounded-[0.5rem] bg-[var(--brand-accent)] text-body-sm font-medium text-white"
+                >
+                  Shop Plunges
+                </Link>
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
