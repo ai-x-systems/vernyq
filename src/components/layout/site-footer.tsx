@@ -1,53 +1,72 @@
 import Link from "next/link";
 import { brandConfig } from "@/config/brand.config";
+import { VernyqLogo } from "@/components/ui/logo";
 
-const footerLinks = [
-  { label: "Shop", href: "/cold-plunge-tubs" },
-  { label: "Science", href: "/science" },
-  { label: "About", href: "/about" },
-  { label: "Shipping", href: "/shipping" },
-  { label: "Warranty", href: "/warranty" },
-  { label: "Returns", href: "/returns" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Contact", href: "/contact" },
-  { label: "Privacy", href: "/privacy" },
-  { label: "Terms", href: "/terms" },
-];
+const footerLinks: Record<string, { label: string; href: string }[]> = {
+  Shop: [{ label: "Cold Plunge Tubs", href: "/cold-plunge-tubs" }],
+  Learn: [
+    { label: "Science", href: "/science" },
+    { label: "Journal", href: "/blog" },
+    { label: "FAQ", href: "/faq" },
+  ],
+  Support: [
+    { label: "Shipping", href: "/shipping" },
+    { label: "Warranty", href: "/warranty" },
+    { label: "Returns", href: "/returns" },
+    { label: "Contact", href: "/contact" },
+  ],
+  Company: [
+    { label: "About", href: "/about" },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
+    // Matches the locked /track-order/[orderNumber] architecture spec,
+    // not the reference's /tracking.
+    { label: "Order Tracking", href: "/track-order" },
+  ],
+};
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[var(--brand-line)] bg-[var(--brand-frost)]">
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-xs">
-            <p className="font-mono text-[15px] font-medium text-[var(--brand-ink)]">
-              {brandConfig.name}
-            </p>
-            <p className="mt-3 text-[13px] leading-relaxed text-[var(--brand-steel)]">
+    <footer className="bg-[var(--brand-ink)] text-white/80">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-8 py-16 md:grid-cols-4 lg:gap-12 lg:py-20">
+          {Object.entries(footerLinks).map(([category, links]) => (
+            <div key={category}>
+              <h3 className="text-overline mb-4 text-white/50">{category}</h3>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-body-sm text-white/70 transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t border-white/10 py-10 lg:py-12">
+          <div className="max-w-md">
+            <VernyqLogo variant="full" color="light" className="h-9" />
+            <p className="mt-3 text-body-sm leading-relaxed text-white/50">
               {brandConfig.tagline}
             </p>
           </div>
-
-          <nav className="grid grid-cols-2 gap-x-10 gap-y-2 sm:grid-cols-3">
-            {footerLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-[13px] text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
         </div>
 
-        <div className="mt-14 flex flex-col gap-2 border-t border-[var(--brand-line)] pt-6 text-[12px] text-[var(--brand-steel)] sm:flex-row sm:items-center sm:justify-between">
-          <p>
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-6 sm:flex-row">
+          <p className="text-caption text-white/40">
             © {year} {brandConfig.legal.entityName}. All rights reserved.
           </p>
-          <p>{brandConfig.market.country} · Prices in {brandConfig.market.currency}</p>
+          <p className="text-caption text-white/40">
+            {brandConfig.market.country} · Prices in {brandConfig.market.currency}
+          </p>
         </div>
       </div>
     </footer>
