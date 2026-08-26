@@ -21,7 +21,7 @@ export function HeroSection() {
           project.
         </p>
 
-        
+        <a
           href="#the-system"
           className="text-body-sm mt-10 inline-flex h-12 items-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] px-8 font-medium text-white transition-colors hover:opacity-90"
         >
