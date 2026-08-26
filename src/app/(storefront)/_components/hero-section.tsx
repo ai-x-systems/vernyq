@@ -20,13 +20,6 @@ export function HeroSection() {
           the U.S. market — built for a daily recovery ritual at home, not a construction
           project.
         </p>
-
-        
-          href="#the-system"
-          className="text-body-sm mt-10 inline-flex h-12 items-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] px-8 font-medium text-white transition-colors hover:opacity-90"
-        >
-          See what we&apos;re building
-        </a>
       </div>
     </section>
   );
