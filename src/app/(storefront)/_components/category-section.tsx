@@ -32,28 +32,24 @@ export function CategorySection() {
       <div className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
         <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] md:gap-20">
           <div>
-            <p className="font-mono text-[11px] font-medium uppercase tracking-wider text-[var(--brand-accent)]">
-              The category
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--brand-ink)] sm:text-4xl">
+            <p className="text-overline text-[var(--brand-accent)]">The category</p>
+            <h2 className="text-h2 mt-4 text-[var(--brand-ink)]">
               What &ldquo;all-in-one&rdquo; actually means
             </h2>
-            <p className="mt-5 text-[15px] leading-relaxed text-[var(--brand-steel)]">
+            <p className="text-body mt-5 text-[var(--brand-steel)]">
               We&apos;re bringing a single all-in-one cold plunge system to market — heating
               and cooling combined into one unit. Full specifications for the launch unit
               will be published once verified; here&apos;s what the category itself covers.
             </p>
           </div>
 
-          <dl className="grid gap-px overflow-hidden rounded-2xl border border-[var(--brand-line)] bg-[var(--brand-line)] sm:grid-cols-2">
+          <dl className="grid gap-px overflow-hidden rounded-[0.5rem] border border-[var(--brand-line)] bg-[var(--brand-line)] sm:grid-cols-2">
             {categoryPoints.map((point) => (
               <div key={point.label} className="bg-white p-7">
-                <dt className="font-mono text-[13px] font-medium text-[var(--brand-ink)]">
+                <dt className="text-body-sm font-medium text-[var(--brand-ink)]">
                   {point.label}
                 </dt>
-                <dd className="mt-2 text-[13px] leading-relaxed text-[var(--brand-steel)]">
-                  {point.detail}
-                </dd>
+                <dd className="text-body-sm mt-2 text-[var(--brand-steel)]">{point.detail}</dd>
               </div>
             ))}
           </dl>
