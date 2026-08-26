@@ -26,12 +26,8 @@ export function TrustSection() {
         <div className="grid divide-y divide-[var(--brand-line)]/60 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           {trustPoints.map((point) => (
             <div key={point.label} className="px-0 py-8 first:pt-0 sm:px-8 sm:py-0 sm:first:pl-0">
-              <p className="font-mono text-[13px] font-medium text-[var(--brand-ink)]">
-                {point.label}
-              </p>
-              <p className="mt-2 text-[13px] leading-relaxed text-[var(--brand-steel)]">
-                {point.detail}
-              </p>
+              <p className="text-body-sm font-medium text-[var(--brand-ink)]">{point.label}</p>
+              <p className="text-body-sm mt-2 text-[var(--brand-steel)]">{point.detail}</p>
             </div>
           ))}
         </div>
