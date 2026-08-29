@@ -51,14 +51,45 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
 
-  const brand = await getCurrentBrand();
-  const product = await getPublishedProductBySlug(brand.id, slug);
+  // TEMPORARY DIAGNOSTIC — same pattern as the homepage sections. Remove
+  // once we've confirmed the site is stable.
+  let brand: Awaited<ReturnType<typeof getCurrentBrand>>;
+  let product: Awaited<ReturnType<typeof getPublishedProductBySlug>>;
+  let allProducts: Awaited<ReturnType<typeof getStorefrontProductList>> = [];
+
+  try {
+    brand = await getCurrentBrand();
+    product = await getPublishedProductBySlug(brand.id, slug);
+    if (product) {
+      allProducts = await getStorefrontProductList(brand.id);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack : undefined;
+    return (
+      <div
+        style={{
+          background: "#fee",
+          border: "2px solid red",
+          padding: 16,
+          margin: 16,
+          fontFamily: "monospace",
+          fontSize: 12,
+          whiteSpace: "pre-wrap",
+        }}
+      >
+        <strong>DIAGNOSTIC — /product/[slug] error:</strong>
+        {"\n"}
+        {message}
+        {stack ? `\n\n${stack}` : ""}
+      </div>
+    );
+  }
 
   if (!product) {
     notFound();
   }
 
-  const allProducts = await getStorefrontProductList(brand.id);
   const relatedProducts = allProducts.filter((p) => p.slug !== product.slug).slice(0, 3);
 
   const productJsonLd = {
