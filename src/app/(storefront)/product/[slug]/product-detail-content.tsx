@@ -223,12 +223,9 @@ export function ProductDetailContent({ product }: { product: Product }) {
                 <p className="text-body-sm mt-2 text-[var(--brand-steel)]">
                   {product.shippingInfo}
                 </p>
-                
-                  href="/shipping"
-                  className="text-caption mt-3 inline-flex items-center gap-1 text-[var(--brand-accent)] transition-colors hover:text-[var(--brand-accent-light)]"
-                >
+                <Link href="/shipping" className="text-caption mt-3 inline-flex items-center gap-1 text-[var(--brand-accent)] transition-colors hover:text-[var(--brand-accent-light)]">
                   Shipping details →
-                </a>
+                </Link>
               </div>
             )}
             {product.warrantyInfo && (
@@ -238,12 +235,9 @@ export function ProductDetailContent({ product }: { product: Product }) {
                 <p className="text-body-sm mt-2 text-[var(--brand-steel)]">
                   {product.warrantyInfo}
                 </p>
-                
-                  href="/warranty"
-                  className="text-caption mt-3 inline-flex items-center gap-1 text-[var(--brand-accent)] transition-colors hover:text-[var(--brand-accent-light)]"
-                >
+                <Link href="/warranty" className="text-caption mt-3 inline-flex items-center gap-1 text-[var(--brand-accent)] transition-colors hover:text-[var(--brand-accent-light)]">
                   Warranty details →
-                </a>
+                </Link>
               </div>
             )}
             <div className="rounded-[0.5rem] border border-[var(--brand-line)] bg-[var(--brand-frost-dim)] p-6">
@@ -252,12 +246,9 @@ export function ProductDetailContent({ product }: { product: Product }) {
               <p className="text-body-sm mt-2 text-[var(--brand-steel)]">
                 See our full return policy for eligibility and timelines.
               </p>
-              
-                href="/returns"
-                className="text-caption mt-3 inline-flex items-center gap-1 text-[var(--brand-accent)] transition-colors hover:text-[var(--brand-accent-light)]"
-              >
+              <Link href="/returns" className="text-caption mt-3 inline-flex items-center gap-1 text-[var(--brand-accent)] transition-colors hover:text-[var(--brand-accent-light)]">
                 Return policy →
-              </a>
+              </Link>
             </div>
           </div>
         </div>
