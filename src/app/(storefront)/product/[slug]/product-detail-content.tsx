@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Truck, Shield, RotateCcw } from "lucide-react";
+import { Mail, Truck, Shield, RotateCcw, Check } from "lucide-react";
 import { formatCentsAsUsd } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { useCart } from "@/contexts/cart-context";
 import type { getPublishedProductBySlug } from "@/features/catalog/services/product.service";
 
 type Product = NonNullable<Awaited<ReturnType<typeof getPublishedProductBySlug>>>;
@@ -36,6 +37,23 @@ function SpecTable({ specifications }: { specifications: Record<string, string> 
 export function ProductDetailContent({ product }: { product: Product }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [justAdded, setJustAdded] = useState(false);
+  const { addItem } = useCart();
+
+  const handleAddToCart = () => {
+    addItem(
+      {
+        productId: product.id,
+        slug: product.slug,
+        name: product.name,
+        priceCents: product.priceCents,
+        imageUrl: product.images[0]?.url ?? null,
+      },
+      quantity,
+    );
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 2000);
+  };
 
   const specifications = (product.specifications as Record<string, string> | null) ?? {};
   const specEntries = Object.entries(specifications);
@@ -154,16 +172,18 @@ export function ProductDetailContent({ product }: { product: Product }) {
                 </div>
               </div>
 
-              {/* Cart isn't wired up yet — that's the very next phase. This
-                  button is UI-ready but intentionally non-functional until
-                  then, rather than faking a real cart interaction. */}
               <button
                 type="button"
-                disabled
-                title="Cart is coming very soon"
-                className="text-body-sm flex h-12 w-full items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white opacity-50"
+                onClick={handleAddToCart}
+                className="text-body-sm flex h-12 w-full items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
               >
-                Add to Cart — {formatCentsAsUsd(product.priceCents * quantity)}
+                {justAdded ? (
+                  <>
+                    <Check className="size-4" /> Added to Cart
+                  </>
+                ) : (
+                  <>Add to Cart — {formatCentsAsUsd(product.priceCents * quantity)}</>
+                )}
               </button>
 
               <Link
