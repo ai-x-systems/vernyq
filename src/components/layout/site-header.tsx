@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, ShoppingBag, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VernyqLogo } from "@/components/ui/logo";
+import { useCart } from "@/contexts/cart-context";
 
 // Nav destinations match the site map already planned in the Phase 1
 // architecture doc. Several of these routes don't have content yet
