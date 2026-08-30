@@ -24,6 +24,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { itemCount } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -84,15 +85,18 @@ export function SiteHeader() {
                 <Search className="size-5" />
               </button>
 
-              {/* Cart is visual-only until the cart phase wires up real
-                  item state — intentionally shows no badge/count yet
-                  rather than a fake number. */}
+              {/* Cart is now wired to real, persisted cart state. */}
               <Link
                 href="/cart"
-                aria-label="Cart"
+                aria-label={`Cart${itemCount > 0 ? `, ${itemCount} item${itemCount === 1 ? "" : "s"}` : ""}`}
                 className="relative p-2 text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
               >
                 <ShoppingBag className="size-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--brand-accent)] px-1 text-[10px] font-medium text-white">
+                    {itemCount}
+                  </span>
+                )}
               </Link>
 
               <Link
