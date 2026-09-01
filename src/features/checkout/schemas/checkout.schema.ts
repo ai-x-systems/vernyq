@@ -55,6 +55,4 @@ export const checkoutSchema = z.object({
 });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
-export type CheckoutFieldErrors = Partial
-  Record<"firstName" | "lastName" | "email" | "phone" | "address" | "city" | "state" | "postalCode" | "paymentMethod", string>
->;
+export type CheckoutFieldErrors = Partial<Record<"firstName" | "lastName" | "email" | "phone" | "address" | "city" | "state" | "postalCode" | "paymentMethod", string>>;
