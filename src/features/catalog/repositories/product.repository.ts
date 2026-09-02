@@ -25,6 +25,17 @@ export function listActiveProducts(brandId: string) {
   });
 }
 
+/**
+ * Used by checkout to re-price cart items server-side. Only returns
+ * ACTIVE products — a product that went DRAFT/archived after being
+ * added to someone's cart must not be purchasable.
+ */
+export function getActiveProductsByIds(brandId: string, ids: string[]) {
+  return prisma.product.findMany({
+    where: { brandId, status: "ACTIVE", id: { in: ids } },
+  });
+}
+
 export function listAllProductsForAdmin(brandId: string) {
   return prisma.product.findMany({
     where: { brandId },
