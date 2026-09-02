@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { OrderStatus, PaymentStatus } from "@/generated/prisma/enums";
+import type { Prisma } from "@/generated/prisma/client";
 
 /**
  * All repository queries MUST be scoped by brandId for multi-tenant safety.
@@ -29,6 +30,64 @@ export const orderRepository = {
 
   create: (data: Parameters<typeof prisma.order.create>[0]["data"]) =>
     prisma.order.create({ data }),
+
+  /**
+   * The actual checkout order-creation path. Order, OrderItems,
+   * OrderPayment, and the initial OrderStatusEvent are created together
+   * in one transaction — if anything fails, nothing is left half-created.
+   * Prices here MUST already be server-verified (see checkout.service.ts)
+   * — this method trusts whatever unitPriceCents it's given, it does not
+   * re-check pricing itself.
+   */
+  createOrderWithItems: (params: {
+    brandId: string;
+    customerId: string;
+    shippingAddress: Prisma.InputJsonValue;
+    items: { productId: string; quantity: number; unitPriceCents: number }[];
+    subtotalCents: number;
+    shippingCents: number;
+    totalCents: number;
+    paymentMethod: PaymentMethod;
+  }) =>
+    prisma.$transaction(async (tx) => {
+      const order = await tx.order.create({
+        data: {
+          brandId: params.brandId,
+          customerId: params.customerId,
+          status: "PENDING_PAYMENT",
+          subtotalCents: params.subtotalCents,
+          shippingCents: params.shippingCents,
+          totalCents: params.totalCents,
+          shippingAddress: params.shippingAddress,
+          items: {
+            create: params.items.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              unitPriceCents: item.unitPriceCents,
+            })),
+          },
+        },
+      });
+
+      await tx.orderPayment.create({
+        data: {
+          brandId: params.brandId,
+          orderId: order.id,
+          amountCents: params.totalCents,
+          provider: params.paymentMethod,
+        },
+      });
+
+      await tx.orderStatusEvent.create({
+        data: {
+          orderId: order.id,
+          status: "PENDING_PAYMENT",
+          note: "Order created",
+        },
+      });
+
+      return order;
+    }),
 
   appendStatusEvent: (orderId: string, status: OrderStatus, note?: string) =>
     prisma.orderStatusEvent.create({
