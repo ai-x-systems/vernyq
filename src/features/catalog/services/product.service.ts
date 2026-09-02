@@ -1,4 +1,8 @@
-import { getProductBySlug, listActiveProducts } from "../repositories/product.repository";
+import {
+  getProductBySlug,
+  listActiveProducts,
+  getActiveProductsByIds,
+} from "../repositories/product.repository";
 
 /**
  * Product service. UI/Server Actions call this, never the repository
@@ -14,4 +18,8 @@ export async function getPublishedProductBySlug(brandId: string, slug: string) {
 
 export async function getStorefrontProductList(brandId: string) {
   return listActiveProducts(brandId);
+}
+
+export async function getPurchasableProductsByIds(brandId: string, ids: string[]) {
+  return getActiveProductsByIds(brandId, ids);
 }
