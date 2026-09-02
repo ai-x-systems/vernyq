@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/contexts/cart-context";
 import { formatCentsAsUsd } from "@/lib/utils";
@@ -10,6 +11,7 @@ import {
   checkoutSchema,
   type CheckoutFieldErrors,
 } from "@/features/checkout/schemas/checkout.schema";
+import { placeOrderAction } from "@/features/checkout/actions/place-order";
 
 const inputClass =
   "h-11 w-full rounded-[0.375rem] border border-[var(--brand-line)] bg-white px-3 text-body-sm text-[var(--brand-ink)] outline-none transition-colors focus:border-[var(--brand-ink)]";
@@ -17,7 +19,9 @@ const labelClass = "text-body-sm mb-1.5 block font-medium text-[var(--brand-ink)
 const errorClass = "text-caption mt-1 text-red-600";
 
 export default function CheckoutPage() {
-  const { items, subtotalCents, isHydrated } = useCart();
+  const router = useRouter();
+  const { items, subtotalCents, isHydrated, clearCart } = useCart();
+  const [isPending, startTransition] = useTransition();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -30,6 +34,7 @@ export default function CheckoutPage() {
   const [postalCode, setPostalCode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"bank_transfer" | "manual_payment_request" | "">("");
   const [errors, setErrors] = useState<CheckoutFieldErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!isHydrated) {
     return <div className="mx-auto max-w-[1400px] px-4 py-24 sm:px-6 lg:px-8" />;
@@ -54,6 +59,7 @@ export default function CheckoutPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSubmitError(null);
 
     const result = checkoutSchema.safeParse({
       customer: { firstName, lastName, email, phone },
@@ -75,13 +81,20 @@ export default function CheckoutPage() {
     }
 
     setErrors({});
-    // Order creation isn't wired up yet — that's the next phase. This
-    // validates and shows the data is ready, without pretending an
-    // order was actually placed.
-    alert(
-      "Checkout form is valid. Order creation (the server action that " +
-        "actually places the order) is the next build phase.",
-    );
+
+    startTransition(async () => {
+      const actionResult = await placeOrderAction(result.data);
+
+      if (!actionResult.success) {
+        setSubmitError(actionResult.error);
+        return;
+      }
+
+      // Clear the cart client-side, then navigate — the order already
+      // exists in the database at this point regardless of navigation.
+      clearCart();
+      router.push(`/order/${actionResult.orderId}`);
+    });
   }
 
   return (
@@ -319,11 +332,18 @@ export default function CheckoutPage() {
               </span>
             </div>
 
+            {submitError && (
+              <p className="text-caption mt-4 rounded-[0.375rem] bg-red-50 px-3 py-2 text-red-600">
+                {submitError}
+              </p>
+            )}
+
             <button
               type="submit"
-              className="text-body-sm mt-6 flex h-12 w-full items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
+              disabled={isPending}
+              className="text-body-sm mt-4 flex h-12 w-full items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90 disabled:opacity-60"
             >
-              Place Order
+              {isPending ? "Placing Order…" : "Place Order"}
             </button>
             <p className="text-caption mt-3 text-center text-[var(--brand-steel)]">
               The final price is confirmed by our server before your order is created.
