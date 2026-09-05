@@ -28,6 +28,29 @@ export const orderRepository = {
       include: { payments: true, items: true, statusHistory: true },
     }),
 
+  /**
+   * Full detail needed to render the customer-facing order
+   * confirmation/tracking page: line items with product name/image,
+   * payment records, and the customer (for email-match verification —
+   * see order-tracking.service.ts, which is the only caller that should
+   * ever use this, since it's more data than most internal callers need).
+   */
+  getOrderForCustomerView: (brandId: string, id: string) =>
+    prisma.order.findFirst({
+      where: { id, brandId },
+      include: {
+        items: {
+          include: {
+            product: {
+              include: { images: { orderBy: { position: "asc" }, take: 1 } },
+            },
+          },
+        },
+        payments: true,
+        customer: true,
+      },
+    }),
+
   create: (data: Parameters<typeof prisma.order.create>[0]["data"]) =>
     prisma.order.create({ data }),
 
