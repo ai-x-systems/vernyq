@@ -2,6 +2,7 @@ import Image from "next/image";
 import { getCurrentBrand } from "@/lib/get-current-brand";
 import { getOrderForTracking, type TrackedOrder } from "@/features/orders/services/order-tracking.service";
 import { getBankDetails } from "@/lib/bank-details";
+import { PaymentProofUpload } from "./payment-proof-upload";
 import { formatCentsAsUsd } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import type { OrderStatus, PaymentStatus } from "@/generated/prisma/enums";
@@ -59,7 +60,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
     return <EmailGate orderId={id} error="We couldn't find an order matching that email." />;
   }
 
-  return <OrderDetail order={order} />;
+  return <OrderDetail order={order} email={email} />;
 }
 
 function EmailGate({ orderId, error }: { orderId: string; error?: string }) {
@@ -103,7 +104,7 @@ function EmailGate({ orderId, error }: { orderId: string; error?: string }) {
   );
 }
 
-function OrderDetail({ order }: { order: TrackedOrder }) {
+function OrderDetail({ order, email }: { order: TrackedOrder; email: string }) {
   const bankDetails = order.payments[0]?.provider === "bank_transfer" ? getBankDetails() : null;
   const payment = order.payments[0];
 
@@ -226,9 +227,9 @@ function OrderDetail({ order }: { order: TrackedOrder }) {
                   <Row label="Reference" value={order.id} mono />
                 </dl>
                 <p className="text-body-sm mt-4 text-[var(--brand-steel)]">
-                  Please include the reference above with your transfer. Payment-proof upload
-                  will be available soon. Once we&apos;ve verified your transfer, your order
-                  status will update to &ldquo;Payment Confirmed.&rdquo;
+                  Please include the reference above with your transfer. Once we&apos;ve
+                  verified your transfer, your order status will update to &ldquo;Payment
+                  Confirmed.&rdquo;
                 </p>
               </>
             ) : (
@@ -236,6 +237,12 @@ function OrderDetail({ order }: { order: TrackedOrder }) {
                 Bank transfer instructions will be sent to your email shortly.
               </p>
             )}
+
+            <PaymentProofUpload
+              orderId={order.id}
+              email={email}
+              alreadyUploadedAt={payment?.proofUploadedAt ?? null}
+            />
           </div>
         )}
 
