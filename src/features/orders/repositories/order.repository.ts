@@ -153,6 +153,20 @@ export const orderRepository = {
       orderBy: { createdAt: "asc" },
     }),
 
+  /**
+   * Records that proof of a bank transfer was uploaded. Deliberately
+   * narrow: the parameter list has no `status` field at all, so it is
+   * structurally impossible for this method to change payment status —
+   * not just a convention enforced by a comment. Verifying payment and
+   * transitioning status stays exclusively OrderService's job (admin
+   * flow, not yet built).
+   */
+  setPaymentProof: (brandId: string, paymentId: string, proofUrl: string) =>
+    prisma.orderPayment.updateMany({
+      where: { id: paymentId, brandId },
+      data: { proofUrl, proofUploadedAt: new Date() },
+    }),
+
   updatePaymentStatus: (
     brandId: string,
     paymentId: string,
