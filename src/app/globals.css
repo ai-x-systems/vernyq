@@ -122,36 +122,54 @@ body {
 }
 
 /* Typography scale from the design system — exposed as theme tokens so
-   components can use e.g. text-display-lg instead of arbitrary values. */
+   components can use e.g. text-h2 instead of arbitrary values.
+   NOTE: these token names were previously out of sync with what every
+   component actually calls (text-h1/h2/h3/display/body/body-sm/caption/
+   overline) — the old names (display-lg, headline-lg, headline-md,
+   label-sm) were defined but referenced by zero components anywhere in
+   the app, meaning virtually every heading/caption/overline on the live
+   site was rendering with no font-size at all. Renamed to match actual
+   usage; values carried over 1:1 from the old scale where a token had
+   an obvious match (h2 = old headline-lg, h3 = old headline-md,
+   overline = old label-sm), new sizes added for h1/body/body-sm/caption
+   to fill out a coherent scale around the untouched, already-working
+   body-lg. */
 @theme inline {
-  --text-display-lg: 4rem; /* 64px */
-  --text-display-lg--line-height: 1.1;
-  --text-display-lg--letter-spacing: -0.02em;
-  --text-display-lg--font-weight: 300;
+  --text-display: 4rem; /* 64px */
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 300;
 
-  --text-display-mobile: 2.5rem; /* 40px */
-  --text-display-mobile--line-height: 1.1;
-  --text-display-mobile--font-weight: 300;
+  --text-h1: 2.5rem; /* 40px */
+  --text-h1--line-height: 1.15;
+  --text-h1--letter-spacing: -0.01em;
+  --text-h1--font-weight: 400;
 
-  --text-headline-lg: 2rem; /* 32px */
-  --text-headline-lg--line-height: 1.2;
-  --text-headline-lg--letter-spacing: -0.01em;
-  --text-headline-lg--font-weight: 400;
+  --text-h2: 2rem; /* 32px */
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h2--font-weight: 400;
 
-  --text-headline-md: 1.5rem; /* 24px */
-  --text-headline-md--line-height: 1.3;
-  --text-headline-md--font-weight: 500;
+  --text-h3: 1.5rem; /* 24px */
+  --text-h3--line-height: 1.3;
+  --text-h3--font-weight: 500;
 
   --text-body-lg: 1.125rem; /* 18px */
   --text-body-lg--line-height: 1.6;
 
-  --text-body-md: 1rem; /* 16px */
-  --text-body-md--line-height: 1.5;
+  --text-body: 1rem; /* 16px */
+  --text-body--line-height: 1.5;
 
-  --text-label-sm: 0.75rem; /* 12px */
-  --text-label-sm--line-height: 1.4;
-  --text-label-sm--letter-spacing: 0.05em;
-  --text-label-sm--font-weight: 600;
+  --text-body-sm: 0.875rem; /* 14px */
+  --text-body-sm--line-height: 1.5;
+
+  --text-caption: 0.75rem; /* 12px */
+  --text-caption--line-height: 1.4;
+
+  --text-overline: 0.75rem; /* 12px */
+  --text-overline--line-height: 1.4;
+  --text-overline--letter-spacing: 0.05em;
+  --text-overline--font-weight: 600;
 }
 
 @keyframes brand-ripple {
