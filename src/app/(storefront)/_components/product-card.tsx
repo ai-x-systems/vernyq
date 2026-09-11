@@ -19,7 +19,7 @@ export function ProductCard({ product }: { product: ProductCardProduct }) {
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--brand-line)] bg-white transition-colors hover:border-[var(--brand-accent)]"
+      className="group flex flex-col overflow-hidden rounded-[0.5rem] border border-[var(--brand-line)] bg-white transition-colors hover:border-[var(--brand-accent)]"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--brand-frost)]">
         {image ? (
@@ -31,29 +31,27 @@ export function ProductCard({ product }: { product: ProductCardProduct }) {
             className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center font-mono text-[11px] uppercase tracking-wider text-[var(--brand-steel)]">
+          <div className="text-overline flex h-full items-center justify-center text-[var(--brand-steel)]">
             Image coming soon
           </div>
         )}
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="text-lg font-semibold tracking-tight text-[var(--brand-ink)]">
-          {product.name}
-        </h3>
+        <h3 className="text-h3 text-[var(--brand-ink)]">{product.name}</h3>
 
         {product.shortDescription && (
-          <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-[var(--brand-steel)]">
+          <p className="text-body-sm mt-2 line-clamp-2 leading-relaxed text-[var(--brand-steel)]">
             {product.shortDescription}
           </p>
         )}
 
         <div className="mt-auto flex items-baseline gap-2 pt-6">
-          <span className="text-lg font-semibold text-[var(--brand-ink)]">
+          <span className="text-h3 text-[var(--brand-ink)]">
             {formatCentsAsUsd(product.priceCents)}
           </span>
           {isOnSale && product.compareAtCents && (
-            <span className="text-sm text-[var(--brand-steel)] line-through">
+            <span className="text-body-sm text-[var(--brand-steel)] line-through">
               {formatCentsAsUsd(product.compareAtCents)}
             </span>
           )}
