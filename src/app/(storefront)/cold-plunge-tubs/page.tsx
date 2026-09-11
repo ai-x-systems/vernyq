@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getCurrentBrand } from "@/lib/get-current-brand";
 import { getStorefrontProductList } from "@/features/catalog/services/product.service";
 import { ProductCard } from "../_components/product-card";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { brandConfig } from "@/config/brand.config";
 
 // This page reads live product data (status, price, availability) from the
@@ -47,14 +48,11 @@ export default async function ColdPlungeTubsPage() {
 
   return (
     <div className="bg-white">
-      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-        <p className="font-mono text-[11px] font-medium uppercase tracking-wider text-[var(--brand-accent)]">
-          Shop
-        </p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-[var(--brand-ink)] sm:text-5xl">
-          {PAGE_TITLE}
-        </h1>
-        <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-[var(--brand-steel)]">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <Breadcrumbs items={[{ label: "Shop" }]} />
+        <p className="text-overline text-[var(--brand-accent)]">Shop</p>
+        <h1 className="text-h1 mt-2 text-[var(--brand-ink)]">{PAGE_TITLE}</h1>
+        <p className="text-body-lg mt-4 max-w-2xl leading-relaxed text-[var(--brand-steel)]">
           {PAGE_DESCRIPTION}
         </p>
 
@@ -71,11 +69,9 @@ export default async function ColdPlungeTubsPage() {
             />
           </>
         ) : (
-          <div className="mt-12 rounded-2xl border border-[var(--brand-line)] bg-[var(--brand-frost)] px-8 py-16 text-center">
-            <p className="font-mono text-[13px] font-medium uppercase tracking-wider text-[var(--brand-steel)]">
-              Nothing published yet
-            </p>
-            <p className="mt-3 text-[15px] leading-relaxed text-[var(--brand-steel)]">
+          <div className="mt-12 rounded-[0.5rem] border border-[var(--brand-line)] bg-[var(--brand-frost)] px-8 py-16 text-center">
+            <p className="text-overline text-[var(--brand-steel)]">Nothing published yet</p>
+            <p className="text-body mt-3 text-[var(--brand-steel)]">
               We&apos;re finishing verification on our first system before listing it here.
               Check back soon.
             </p>
