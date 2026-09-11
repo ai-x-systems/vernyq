@@ -2,6 +2,7 @@ import { HeroSection } from "./_components/hero-section";
 import { TrustSection } from "./_components/trust-section";
 import { FeaturedProductSection } from "./_components/featured-product-section";
 import { CategorySection } from "./_components/category-section";
+import { WhyVernyqSection } from "./_components/why-vernyq-section";
 import { ScienceTeaserSection } from "./_components/science-teaser-section";
 import { SystemsSection } from "./_components/systems-section";
 import { FaqPreviewSection } from "./_components/faq-preview-section";
@@ -18,6 +19,7 @@ export default function HomePage() {
       <TrustSection />
       <FeaturedProductSection />
       <CategorySection />
+      <WhyVernyqSection />
       <ScienceTeaserSection />
       <SystemsSection />
       <FaqPreviewSection />
