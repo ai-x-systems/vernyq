@@ -26,3 +26,23 @@ export function getSupabaseAdmin() {
 }
 
 export const PAYMENT_PROOFS_BUCKET = "payment-proofs";
+
+/**
+ * Generates a short-lived signed URL so admin can view a payment-proof
+ * image without the bucket ever being public. Server-only, admin-gated
+ * caller required — this function itself doesn't check authorization,
+ * middleware.ts on /admin/* does.
+ */
+export async function getSignedProofUrl(path: string, expiresInSeconds = 300): Promise<string | null> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase.storage
+    .from(PAYMENT_PROOFS_BUCKET)
+    .createSignedUrl(path, expiresInSeconds);
+
+  if (error || !data) {
+    console.error("getSignedProofUrl failed:", error);
+    return null;
+  }
+
+  return data.signedUrl;
+}
