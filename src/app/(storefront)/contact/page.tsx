@@ -34,10 +34,7 @@ export default function ContactPage() {
       <div className="mt-8 rounded-[0.5rem] border border-[var(--brand-line)] bg-[var(--brand-frost-dim)] p-6">
         <div className="flex items-center gap-3">
           <Mail className="size-5 text-[var(--brand-accent)]" />
-          
-            href={`mailto:${brandConfig.contact.supportEmail}`}
-            className="text-body font-medium text-[var(--brand-ink)] underline underline-offset-2"
-          >
+          <a href={`mailto:${brandConfig.contact.supportEmail}`} className="text-body font-medium text-[var(--brand-ink)] underline underline-offset-2">
             {brandConfig.contact.supportEmail}
           </a>
         </div>
