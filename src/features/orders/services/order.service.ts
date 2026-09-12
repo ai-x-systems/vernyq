@@ -20,6 +20,11 @@ const allowedTransitions: Record<OrderStatus, Set<OrderStatus>> = {
 };
 
 export class OrderService {
+  /** Read-only lookup for UI purposes — the map itself stays private/authoritative. */
+  getAllowedNextStatuses(current: OrderStatus): OrderStatus[] {
+    return Array.from(allowedTransitions[current] ?? []);
+  }
+
   async createOrder(data: Parameters<typeof orderRepository.create>[0]) {
     return orderRepository.create(data);
   }
