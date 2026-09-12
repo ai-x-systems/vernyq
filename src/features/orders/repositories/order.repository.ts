@@ -154,12 +154,49 @@ export const orderRepository = {
     }),
 
   /**
+   * Admin order list — paginated and optionally filtered by status.
+   * Deliberately separate from getOrderForCustomerView: this is more
+   * data (payments, fulfillment) than a customer should ever be able to
+   * request in one shot, and it's never called with a customer-supplied
+   * id/email pair.
+   */
+  listForAdmin: (brandId: string, params: { status?: OrderStatus; page: number; pageSize: number }) => {
+    const where = { brandId, ...(params.status ? { status: params.status } : {}) };
+    return Promise.all([
+      prisma.order.findMany({
+        where,
+        include: { customer: true, payments: true },
+        orderBy: { createdAt: "desc" },
+        skip: (params.page - 1) * params.pageSize,
+        take: params.pageSize,
+      }),
+      prisma.order.count({ where }),
+    ]);
+  },
+
+  /**
+   * Full detail for the admin order screen: everything getOrderForCustomerView
+   * has, plus payments/fulfillment/status history a customer should never see.
+   */
+  getOrderForAdmin: (brandId: string, id: string) =>
+    prisma.order.findFirst({
+      where: { id, brandId },
+      include: {
+        items: { include: { product: { include: { images: { orderBy: { position: "asc" }, take: 1 } } } } },
+        payments: true,
+        customer: true,
+        statusHistory: { orderBy: { createdAt: "asc" } },
+        supplierFulfillment: true,
+      },
+    }),
+
+  /**
    * Records that proof of a bank transfer was uploaded. Deliberately
    * narrow: the parameter list has no `status` field at all, so it is
    * structurally impossible for this method to change payment status —
    * not just a convention enforced by a comment. Verifying payment and
-   * transitioning status stays exclusively OrderService's job (admin
-   * flow, not yet built).
+   * transitioning status stays exclusively OrderService's job — see
+   * verifyPaymentAction in admin/orders/[id]/actions.ts.
    */
   setPaymentProof: (brandId: string, paymentId: string, proofUrl: string) =>
     prisma.orderPayment.updateMany({
