@@ -3,13 +3,30 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Truck, Shield, RotateCcw, Check } from "lucide-react";
+import { Mail, Truck, Shield, RotateCcw, Check, ShieldCheck, Lock, MessageCircle, Play, Star, X } from "lucide-react";
 import { formatCentsAsUsd } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { useCart } from "@/contexts/cart-context";
-import type { getPublishedProductBySlug } from "@/features/catalog/services/product.service";
+import type { getPublishedProductBySlug, getProductReviews } from "@/features/catalog/services/product.service";
 
 type Product = NonNullable<Awaited<ReturnType<typeof getPublishedProductBySlug>>>;
+type ReviewData = Awaited<ReturnType<typeof getProductReviews>>;
+
+type MediaItem =
+  | { type: "image"; url: string; alt: string }
+  | { type: "video"; url: string; embedUrl: string | null };
+
+/**
+ * Returns an iframe-embeddable URL for YouTube/Vimeo links, or null for a
+ * direct video file URL (which gets a native <video> tag instead).
+ */
+function getVideoEmbedUrl(url: string): string | null {
+  const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if (youtubeMatch) return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+  return null;
+}
 
 function SpecTable({ specifications }: { specifications: Record<string, string> }) {
   const entries = Object.entries(specifications);
@@ -34,10 +51,24 @@ function SpecTable({ specifications }: { specifications: Record<string, string> 
   );
 }
 
-export function ProductDetailContent({ product }: { product: Product }) {
-  const [selectedImage, setSelectedImage] = useState(0);
+function StarRating({ value }: { value: number }) {
+  return (
+    <div className="flex items-center gap-0.5" aria-label={`${value.toFixed(1)} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Star
+          key={n}
+          className={`size-4 ${n <= Math.round(value) ? "fill-[var(--brand-accent)] text-[var(--brand-accent)]" : "text-[var(--brand-line)]"}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+export function ProductDetailContent({ product, reviewData }: { product: Product; reviewData: ReviewData }) {
+  const [selectedMedia, setSelectedMedia] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const { addItem } = useCart();
 
   const handleAddToCart = () => {
@@ -59,10 +90,17 @@ export function ProductDetailContent({ product }: { product: Product }) {
   const specEntries = Object.entries(specifications);
   const dimensions = (product.dimensions as Record<string, string> | null) ?? {};
   const dimensionEntries = Object.entries(dimensions);
-  const images = product.images;
+
+  const media: MediaItem[] = [
+    ...product.images.map((img): MediaItem => ({ type: "image", url: img.url, alt: img.altText })),
+    ...(product.videoUrl
+      ? [{ type: "video", url: product.videoUrl, embedUrl: getVideoEmbedUrl(product.videoUrl) } as MediaItem]
+      : []),
+  ];
+  const current = media[selectedMedia];
 
   return (
-    <div>
+    <div className="pb-24 lg:pb-0">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <Breadcrumbs
           items={[
@@ -75,39 +113,61 @@ export function ProductDetailContent({ product }: { product: Product }) {
           {/* Gallery */}
           <div>
             <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-[0.75rem] bg-[var(--brand-frost-dim)]">
-              {images[selectedImage] ? (
-                <Image
-                  src={images[selectedImage].url}
-                  alt={images[selectedImage].altText}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
-                  priority
-                />
-              ) : (
+              {current?.type === "image" && (
+                <button
+                  type="button"
+                  onClick={() => setLightboxOpen(true)}
+                  className="absolute inset-0 h-full w-full cursor-zoom-in"
+                  aria-label="View full size image"
+                >
+                  <Image
+                    src={current.url}
+                    alt={current.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover"
+                    priority
+                  />
+                </button>
+              )}
+              {current?.type === "video" &&
+                (current.embedUrl ? (
+                  <iframe
+                    src={current.embedUrl}
+                    title={`${product.name} video`}
+                    className="h-full w-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video src={current.url} controls className="h-full w-full object-cover" />
+                ))}
+              {!current && (
                 <div className="text-body-sm flex h-full items-center justify-center text-[var(--brand-steel)]">
                   Image coming soon
                 </div>
               )}
             </div>
-            {images.length > 1 && (
+            {media.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
-                {images.map((img, i) => (
+                {media.map((item, i) => (
                   <button
-                    key={img.id}
-                    onClick={() => setSelectedImage(i)}
-                    className={`aspect-square overflow-hidden rounded-[0.375rem] border-2 transition-colors ${
-                      selectedImage === i
+                    key={item.type === "image" ? item.url : `video-${i}`}
+                    onClick={() => setSelectedMedia(i)}
+                    className={`relative aspect-square overflow-hidden rounded-[0.375rem] border-2 transition-colors ${
+                      selectedMedia === i
                         ? "border-[var(--brand-ink)]"
                         : "border-transparent hover:border-[var(--brand-line)]"
                     }`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element -- thumbnail strip, not the primary LCP image */}
-                    <img
-                      src={img.url}
-                      alt={img.altText}
-                      className="h-full w-full object-cover"
-                    />
+                    {item.type === "image" ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- thumbnail strip, not the primary LCP image
+                      <img src={item.url} alt={item.alt} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-[var(--brand-ink)]">
+                        <Play className="size-5 fill-white text-white" />
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -123,13 +183,30 @@ export function ProductDetailContent({ product }: { product: Product }) {
               </p>
             )}
 
-            <div className="mt-6 flex items-baseline gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               <span className="text-price text-[var(--brand-ink)]">
                 {formatCentsAsUsd(product.priceCents)}
               </span>
               {product.compareAtCents && product.compareAtCents > product.priceCents && (
                 <span className="text-body text-[var(--brand-muted)] line-through">
                   {formatCentsAsUsd(product.compareAtCents)}
+                </span>
+              )}
+              <span
+                className={`text-caption rounded-full border px-3 py-1 font-medium ${
+                  product.inStock
+                    ? "border-green-600 bg-green-50 text-green-700"
+                    : "border-[var(--brand-line)] text-[var(--brand-steel)]"
+                }`}
+              >
+                {product.inStock ? "In Stock" : "Contact for Availability"}
+              </span>
+              {reviewData.count > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <StarRating value={reviewData.average} />
+                  <span className="text-caption text-[var(--brand-steel)]">
+                    ({reviewData.count})
+                  </span>
                 </span>
               )}
             </div>
@@ -145,46 +222,58 @@ export function ProductDetailContent({ product }: { product: Product }) {
             )}
 
             <div className="mt-8 space-y-3">
-              <div className="flex items-center gap-4">
-                <label className="text-body-sm font-medium text-[var(--brand-ink)]">
-                  Quantity
-                </label>
-                <div className="flex items-center rounded-[0.375rem] border border-[var(--brand-line)]">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="flex h-10 w-10 items-center justify-center text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
-                    aria-label="Decrease quantity"
-                  >
-                    −
-                  </button>
-                  <span className="text-body-sm flex h-10 w-10 items-center justify-center border-x border-[var(--brand-line)] font-medium text-[var(--brand-ink)]">
-                    {quantity}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setQuantity((q) => q + 1)}
-                    className="flex h-10 w-10 items-center justify-center text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
-                    aria-label="Increase quantity"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
+              {product.inStock ? (
+                <>
+                  <div className="flex items-center gap-4">
+                    <label className="text-body-sm font-medium text-[var(--brand-ink)]">
+                      Quantity
+                    </label>
+                    <div className="flex items-center rounded-[0.375rem] border border-[var(--brand-line)]">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="flex h-10 w-10 items-center justify-center text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className="text-body-sm flex h-10 w-10 items-center justify-center border-x border-[var(--brand-line)] font-medium text-[var(--brand-ink)]">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => q + 1)}
+                        className="flex h-10 w-10 items-center justify-center text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
 
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                className="text-body-sm flex h-12 w-full items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
-              >
-                {justAdded ? (
-                  <>
-                    <Check className="size-4" /> Added to Cart
-                  </>
-                ) : (
-                  <>Add to Cart — {formatCentsAsUsd(product.priceCents * quantity)}</>
-                )}
-              </button>
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="text-body-sm flex h-12 w-full items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
+                  >
+                    {justAdded ? (
+                      <>
+                        <Check className="size-4" /> Added to Cart
+                      </>
+                    ) : (
+                      <>Add to Cart — {formatCentsAsUsd(product.priceCents * quantity)}</>
+                    )}
+                  </button>
+                </>
+              ) : (
+                <div className="rounded-[0.5rem] border border-[var(--brand-line)] bg-[var(--brand-frost-dim)] p-4">
+                  <p className="text-body-sm font-medium text-[var(--brand-ink)]">Currently unavailable</p>
+                  <p className="text-body-sm mt-1 text-[var(--brand-steel)]">
+                    We&apos;re finalizing stock on this system. Contact us and we&apos;ll let you know
+                    the moment it&apos;s ready to ship.
+                  </p>
+                </div>
+              )}
 
               <Link
                 href="/contact"
@@ -192,6 +281,28 @@ export function ProductDetailContent({ product }: { product: Product }) {
               >
                 <Mail className="size-4" /> Ask a Question
               </Link>
+            </div>
+
+            {/* Trust row — operational facts only, nothing fabricated */}
+            <div className="mt-6 grid grid-cols-1 gap-3 border-t border-[var(--brand-line)] pt-6 sm:grid-cols-3">
+              <div className="flex items-start gap-2">
+                <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[var(--brand-accent)]" />
+                <span className="text-caption text-[var(--brand-steel)]">
+                  Payment verified manually before shipping
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Lock className="mt-0.5 size-4 shrink-0 text-[var(--brand-accent)]" />
+                <span className="text-caption text-[var(--brand-steel)]">
+                  No card data stored on this site
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <MessageCircle className="mt-0.5 size-4 shrink-0 text-[var(--brand-accent)]" />
+                <span className="text-caption text-[var(--brand-steel)]">
+                  Real support, real answers
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -292,6 +403,114 @@ export function ProductDetailContent({ product }: { product: Product }) {
             </div>
           </div>
         </section>
+      )}
+
+      {/* Reviews — only rendered if real, approved reviews exist */}
+      {reviewData.count > 0 && (
+        <section className="border-t border-[var(--brand-line)] py-16 lg:py-24">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <p className="text-overline mb-3 text-center text-[var(--brand-accent)]">Reviews</p>
+            <div className="flex items-center justify-center gap-2">
+              <StarRating value={reviewData.average} />
+              <span className="text-body-sm text-[var(--brand-steel)]">
+                {reviewData.average.toFixed(1)} · {reviewData.count} review{reviewData.count !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <div className="mt-10 space-y-6">
+              {reviewData.reviews.map((review) => (
+                <div key={review.id} className="border-b border-[var(--brand-line)] pb-6 last:border-0">
+                  <StarRating value={review.rating} />
+                  <h3 className="text-body-sm mt-2 font-medium text-[var(--brand-ink)]">{review.title}</h3>
+                  <p className="text-body-sm mt-1 text-[var(--brand-steel)]">{review.body}</p>
+                  <p className="text-caption mt-2 text-[var(--brand-muted)]">
+                    {review.customer.name} · {review.createdAt.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Closing CTA */}
+      <section className="border-t border-[var(--brand-line)] bg-[var(--brand-ink)] py-16 text-center lg:py-20">
+        <div className="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-h2 text-white">Ready to order?</h2>
+          <p className="text-body-lg mt-3 text-white/70">
+            {product.inStock
+              ? "Your order is confirmed once we've personally verified your payment."
+              : "Contact us and we'll confirm availability directly."}
+          </p>
+          <div className="mt-6 flex justify-center">
+            {product.inStock ? (
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className="text-body-sm flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-white px-8 font-medium text-[var(--brand-ink)] transition-colors hover:opacity-90"
+              >
+                {justAdded ? (
+                  <>
+                    <Check className="size-4" /> Added to Cart
+                  </>
+                ) : (
+                  <>Add to Cart — {formatCentsAsUsd(product.priceCents * quantity)}</>
+                )}
+              </button>
+            ) : (
+              <Link
+                href="/contact"
+                className="text-body-sm flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-white px-8 font-medium text-[var(--brand-ink)] transition-colors hover:opacity-90"
+              >
+                <Mail className="size-4" /> Contact Us
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Sticky mobile buy bar */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--brand-line)] bg-white p-4 lg:hidden">
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-body-sm font-medium text-[var(--brand-ink)]">
+            {formatCentsAsUsd(product.priceCents)}
+          </span>
+          {product.inStock ? (
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="text-body-sm flex h-10 flex-1 max-w-[220px] items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
+            >
+              {justAdded ? <Check className="size-4" /> : "Add to Cart"}
+            </button>
+          ) : (
+            <Link
+              href="/contact"
+              className="text-body-sm flex h-10 flex-1 max-w-[220px] items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
+            >
+              Contact Us
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && current?.type === "image" && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(false)}
+            className="absolute right-4 top-4 text-white"
+            aria-label="Close"
+          >
+            <X className="size-8" />
+          </button>
+          <div className="relative h-full max-h-[85vh] w-full max-w-4xl">
+            <Image src={current.url} alt={current.alt} fill className="object-contain" />
+          </div>
+        </div>
       )}
     </div>
   );
