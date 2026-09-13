@@ -4,6 +4,7 @@ import { getCurrentBrand } from "@/lib/get-current-brand";
 import {
   getPublishedProductBySlug,
   getStorefrontProductList,
+  getProductReviews,
 } from "@/features/catalog/services/product.service";
 import { brandConfig } from "@/config/brand.config";
 import { ProductDetailContent } from "./product-detail-content";
@@ -60,6 +61,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
   const allProducts = await getStorefrontProductList(brand.id);
   const relatedProducts = allProducts.filter((p) => p.slug !== product.slug).slice(0, 3);
+  const reviewData = await getProductReviews(product.id);
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -72,9 +74,22 @@ export default async function ProductDetailPage({ params }: Props) {
       "@type": "Offer",
       priceCurrency: "USD",
       price: (product.priceCents / 100).toFixed(2),
-      availability: "https://schema.org/InStock",
+      availability: product.inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
       url: `${brandConfig.domain}/product/${product.slug}`,
     },
+    // Only included when real, approved reviews exist — never a
+    // fabricated or placeholder rating.
+    ...(reviewData.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: reviewData.average.toFixed(1),
+            reviewCount: reviewData.count,
+          },
+        }
+      : {}),
   };
 
   const breadcrumbJsonLd = {
@@ -99,7 +114,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <div className="bg-white">
-      <ProductDetailContent product={product} />
+      <ProductDetailContent product={product} reviewData={reviewData} />
 
       {relatedProducts.length > 0 && (
         <section className="border-t border-[var(--brand-line)] py-16 lg:py-24">
