@@ -42,3 +42,23 @@ export function listAllProductsForAdmin(brandId: string) {
     orderBy: { createdAt: "desc" },
   });
 }
+
+export function setProductInStock(brandId: string, productId: string, inStock: boolean) {
+  return prisma.product.updateMany({
+    where: { id: productId, brandId },
+    data: { inStock },
+  });
+}
+
+/**
+ * Only ever returns approved reviews — an unapproved review is
+ * unmoderated user input and must never render publicly, regardless of
+ * what else changes on this page.
+ */
+export function getApprovedReviewsForProduct(productId: string) {
+  return prisma.review.findMany({
+    where: { productId, approved: true },
+    include: { customer: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+}
