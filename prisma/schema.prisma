@@ -47,6 +47,8 @@ model Product {
   warrantyInfo     String?
   shippingInfo     String?
   supplierRef      String?
+  inStock          Boolean        @default(false)
+  videoUrl         String?
   seoTitle         String?
   seoDescription   String?
   status           ProductStatus  @default(DRAFT)
