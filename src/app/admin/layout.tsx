@@ -13,6 +13,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link href="/admin/orders" className="text-body-sm font-medium text-[var(--brand-ink)]">
                 Orders
               </Link>
+              <Link href="/admin/products" className="text-body-sm font-medium text-[var(--brand-ink)]">
+                Products
+              </Link>
             </nav>
           </div>
           <form action={logoutAction}>
