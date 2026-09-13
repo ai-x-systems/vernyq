@@ -145,6 +145,15 @@ body {
   --text-h1--letter-spacing: -0.01em;
   --text-h1--font-weight: 400;
 
+  /* Large price display — bigger and bolder than h1 since the price is
+     the single most important number on a product page. Same bug class
+     as everything above: used across product cards/PDP but never
+     defined, so it rendered with no font-size at all until caught here. */
+  --text-price: 2.75rem; /* 44px */
+  --text-price--line-height: 1.1;
+  --text-price--letter-spacing: -0.02em;
+  --text-price--font-weight: 600;
+
   --text-h2: 2rem; /* 32px */
   --text-h2--line-height: 1.2;
   --text-h2--letter-spacing: -0.01em;
