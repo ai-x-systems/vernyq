@@ -2,6 +2,9 @@ import {
   getProductBySlug,
   listActiveProducts,
   getActiveProductsByIds,
+  listAllProductsForAdmin,
+  setProductInStock,
+  getApprovedReviewsForProduct,
 } from "../repositories/product.repository";
 
 /**
@@ -22,4 +25,19 @@ export async function getStorefrontProductList(brandId: string) {
 
 export async function getPurchasableProductsByIds(brandId: string, ids: string[]) {
   return getActiveProductsByIds(brandId, ids);
+}
+
+export async function getAdminProductList(brandId: string) {
+  return listAllProductsForAdmin(brandId);
+}
+
+export async function toggleProductInStock(brandId: string, productId: string, inStock: boolean) {
+  return setProductInStock(brandId, productId, inStock);
+}
+
+export async function getProductReviews(productId: string) {
+  const reviews = await getApprovedReviewsForProduct(productId);
+  const count = reviews.length;
+  const average = count > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : 0;
+  return { reviews, count, average };
 }
