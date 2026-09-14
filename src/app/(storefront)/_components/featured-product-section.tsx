@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight, Check } from "lucide-react";
 import { getCurrentBrand } from "@/lib/get-current-brand";
 import { getStorefrontProductList } from "@/features/catalog/services/product.service";
 import { formatCentsAsUsd } from "@/lib/utils";
@@ -9,7 +10,8 @@ import { formatCentsAsUsd } from "@/lib/utils";
  * there isn't one yet. Deliberately does NOT assume specific
  * specification keys exist (e.g. "Temperature Range") — the
  * specifications JSON shape/taxonomy hasn't been locked yet, so this
- * just shows whatever the first couple of entries actually are.
+ * just shows whatever the first couple of entries actually are, using a
+ * generic checkmark rather than a spec-specific icon per row.
  */
 export async function FeaturedProductSection() {
   const brand = await getCurrentBrand();
@@ -41,13 +43,16 @@ export async function FeaturedProductSection() {
                 Image coming soon
               </div>
             )}
+            <div className="absolute left-4 top-4 rounded-[0.25rem] bg-[var(--brand-ink)] px-3 py-1 text-caption font-medium text-white">
+              Flagship
+            </div>
           </div>
 
           <div>
             <p className="text-overline mb-3 text-[var(--brand-accent)]">Flagship</p>
             <h2 className="text-h2 text-[var(--brand-ink)]">{flagship.name}</h2>
             {flagship.shortDescription && (
-              <p className="text-body-lg mt-4 text-[var(--brand-steel)]">
+              <p className="text-body-lg mt-4 leading-relaxed text-[var(--brand-steel)]">
                 {flagship.shortDescription}
               </p>
             )}
@@ -55,9 +60,11 @@ export async function FeaturedProductSection() {
             {specEntries.length > 0 && (
               <div className="mt-6 space-y-3">
                 {specEntries.map(([key, value]) => (
-                  <div key={key} className="text-body-sm text-[var(--brand-steel)]">
-                    <span className="font-medium text-[var(--brand-ink)]">{key}:</span>{" "}
-                    {value}
+                  <div key={key} className="flex items-center gap-3 text-body-sm text-[var(--brand-steel)]">
+                    <Check className="size-4 shrink-0 text-[var(--brand-accent)]" />
+                    <span>
+                      <span className="font-medium text-[var(--brand-ink)]">{key}:</span> {value}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -73,6 +80,7 @@ export async function FeaturedProductSection() {
                 className="text-body-sm inline-flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] px-8 font-medium text-white transition-colors hover:opacity-90"
               >
                 View full details
+                <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>
