@@ -32,17 +32,11 @@ export function HeroSection() {
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            
-              href="#the-system"
-              className="text-body-sm inline-flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-white px-8 font-medium text-[var(--brand-ink)] transition-colors hover:bg-white/90"
-            >
+            <a href="#the-system" className="text-body-sm inline-flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-white px-8 font-medium text-[var(--brand-ink)] transition-colors hover:bg-white/90">
               See what we&apos;re building
               <ArrowRight className="size-4" />
             </a>
-            <Link
-              href="/science"
-              className="text-body-sm inline-flex h-12 items-center justify-center gap-2 rounded-[0.5rem] border border-white/20 px-8 font-medium text-white transition-colors hover:bg-white/10"
-            >
+            <Link href="/science" className="text-body-sm inline-flex h-12 items-center justify-center gap-2 rounded-[0.5rem] border border-white/20 px-8 font-medium text-white transition-colors hover:bg-white/10">
               Explore the science
             </Link>
           </div>
