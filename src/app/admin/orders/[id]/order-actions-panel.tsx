@@ -62,12 +62,7 @@ export function OrderActionsPanel({ orderId, paymentId, paymentStatus, allowedNe
       {paymentId && paymentStatus === "PENDING" && (
         <div>
           <h2 className="text-h3 text-[var(--brand-ink)]">Payment</h2>
-          <button
-            type="button"
-            disabled={isPending}
-            onClick={() => runAction(() => verifyPaymentAction(orderId, paymentId))}
-            className="text-body-sm mt-3 flex h-10 items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] px-5 font-medium text-white transition-colors hover:opacity-90 disabled:opacity-60"
-          >
+          <button type="button" disabled={isPending} onClick={() => runAction(() => verifyPaymentAction(orderId, paymentId))} className="text-body-sm mt-3 flex h-10 items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] px-5 font-medium text-white transition-colors hover:opacity-90 disabled:opacity-60">
             {isPending ? "Verifying…" : "Verify Payment"}
           </button>
         </div>
@@ -78,13 +73,7 @@ export function OrderActionsPanel({ orderId, paymentId, paymentStatus, allowedNe
           <h2 className="text-h3 text-[var(--brand-ink)]">Order Status</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {allowedNextStatuses.map((status) => (
-              <button
-                key={status}
-                type="button"
-                disabled={isPending}
-                onClick={() => runAction(() => transitionOrderAction(orderId, status))}
-                className="text-body-sm flex h-10 items-center justify-center rounded-[0.5rem] border border-[var(--brand-line)] px-4 font-medium text-[var(--brand-ink)] transition-colors hover:bg-[var(--brand-frost-dim)] disabled:opacity-60"
-              >
+              <button key={status} type="button" disabled={isPending} onClick={() => runAction(() => transitionOrderAction(orderId, status))} className="text-body-sm flex h-10 items-center justify-center rounded-[0.5rem] border border-[var(--brand-line)] px-4 font-medium text-[var(--brand-ink)] transition-colors hover:bg-[var(--brand-frost-dim)] disabled:opacity-60">
                 {STATUS_LABELS[status]}
               </button>
             ))}
@@ -104,11 +93,7 @@ export function OrderActionsPanel({ orderId, paymentId, paymentStatus, allowedNe
           <Field name="carrier" label="Carrier" defaultValue={fulfillment?.carrier} />
           <Field name="bolNumber" label="BOL number" defaultValue={fulfillment?.bolNumber} />
           <Field name="notes" label="Notes" defaultValue={fulfillment?.notes} />
-          <button
-            type="submit"
-            disabled={isPending}
-            className="text-body-sm col-span-full flex h-10 w-fit items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] px-5 font-medium text-white transition-colors hover:opacity-90 disabled:opacity-60"
-          >
+          <button type="submit" disabled={isPending} className="text-body-sm col-span-full flex h-10 w-fit items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] px-5 font-medium text-white transition-colors hover:opacity-90 disabled:opacity-60">
             {isPending ? "Saving…" : "Save Fulfillment Details"}
           </button>
         </form>
@@ -127,12 +112,7 @@ function Field({ name, label, defaultValue }: { name: string; label: string; def
       <label htmlFor={name} className="text-caption mb-1 block font-medium text-[var(--brand-steel)]">
         {label}
       </label>
-      <input
-        id={name}
-        name={name}
-        defaultValue={defaultValue ?? ""}
-        className="h-10 w-full rounded-[0.375rem] border border-[var(--brand-line)] bg-white px-3 text-body-sm text-[var(--brand-ink)] outline-none transition-colors focus:border-[var(--brand-ink)]"
-      />
+      <input id={name} name={name} defaultValue={defaultValue ?? ""} className="h-10 w-full rounded-[0.375rem] border border-[var(--brand-line)] bg-white px-3 text-body-sm text-[var(--brand-ink)] outline-none transition-colors focus:border-[var(--brand-ink)]" />
     </div>
   );
 }
