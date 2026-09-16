@@ -35,10 +35,7 @@ function SpecTable({ specifications }: { specifications: Record<string, string> 
   return (
     <div className="overflow-hidden rounded-[0.5rem] border border-[var(--brand-line)]">
       {entries.map(([key, value], index) => (
-        <div
-          key={key}
-          className={`flex flex-col sm:flex-row sm:items-center ${index !== 0 ? "border-t border-[var(--brand-line)]" : ""}`}
-        >
+        <div key={key} className={`flex flex-col sm:flex-row sm:items-center ${index !== 0 ? "border-t border-[var(--brand-line)]" : ""}`}>
           <div className="bg-[var(--brand-frost-dim)] px-5 py-3.5 sm:w-1/3">
             <span className="text-body-sm font-medium text-[var(--brand-ink)]">{key}</span>
           </div>
@@ -55,10 +52,7 @@ function StarRating({ value }: { value: number }) {
   return (
     <div className="flex items-center gap-0.5" aria-label={`${value.toFixed(1)} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((n) => (
-        <Star
-          key={n}
-          className={`size-4 ${n <= Math.round(value) ? "fill-[var(--brand-accent)] text-[var(--brand-accent)]" : "text-[var(--brand-line)]"}`}
-        />
+        <Star key={n} className={`size-4 ${n <= Math.round(value) ? "fill-[var(--brand-accent)] text-[var(--brand-accent)]" : "text-[var(--brand-line)]"}`} />
       ))}
     </div>
   );
@@ -102,43 +96,20 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
   return (
     <div className="pb-24 lg:pb-0">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <Breadcrumbs
-          items={[
-            { label: "Cold Plunge Tubs", href: "/cold-plunge-tubs" },
-            { label: product.name },
-          ]}
-        />
+        <Breadcrumbs items={[{ label: "Cold Plunge Tubs", href: "/cold-plunge-tubs" }, { label: product.name }]} />
 
         <div className="grid gap-8 pb-16 lg:grid-cols-2 lg:gap-16 lg:pb-24">
           {/* Gallery */}
           <div>
             <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-[0.75rem] bg-[var(--brand-frost-dim)]">
               {current?.type === "image" && (
-                <button
-                  type="button"
-                  onClick={() => setLightboxOpen(true)}
-                  className="absolute inset-0 h-full w-full cursor-zoom-in"
-                  aria-label="View full size image"
-                >
-                  <Image
-                    src={current.url}
-                    alt={current.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover"
-                    priority
-                  />
+                <button type="button" onClick={() => setLightboxOpen(true)} className="absolute inset-0 h-full w-full cursor-zoom-in" aria-label="View full size image">
+                  <Image src={current.url} alt={current.alt} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" priority />
                 </button>
               )}
               {current?.type === "video" &&
                 (current.embedUrl ? (
-                  <iframe
-                    src={current.embedUrl}
-                    title={`${product.name} video`}
-                    className="h-full w-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                  <iframe src={current.embedUrl} title={`${product.name} video`} className="h-full w-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
                 ) : (
                   <video src={current.url} controls className="h-full w-full object-cover" />
                 ))}
@@ -151,15 +122,7 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
             {media.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
                 {media.map((item, i) => (
-                  <button
-                    key={item.type === "image" ? item.url : `video-${i}`}
-                    onClick={() => setSelectedMedia(i)}
-                    className={`relative aspect-square overflow-hidden rounded-[0.375rem] border-2 transition-colors ${
-                      selectedMedia === i
-                        ? "border-[var(--brand-ink)]"
-                        : "border-transparent hover:border-[var(--brand-line)]"
-                    }`}
-                  >
+                  <button key={item.type === "image" ? item.url : `video-${i}`} onClick={() => setSelectedMedia(i)} className={`relative aspect-square overflow-hidden rounded-[0.375rem] border-2 transition-colors ${selectedMedia === i ? "border-[var(--brand-ink)]" : "border-transparent hover:border-[var(--brand-line)]"}`}>
                     {item.type === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element -- thumbnail strip, not the primary LCP image
                       <img src={item.url} alt={item.alt} className="h-full w-full object-cover" />
@@ -192,13 +155,7 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
                   {formatCentsAsUsd(product.compareAtCents)}
                 </span>
               )}
-              <span
-                className={`text-caption rounded-full border px-3 py-1 font-medium ${
-                  product.inStock
-                    ? "border-green-600 bg-green-50 text-green-700"
-                    : "border-[var(--brand-line)] text-[var(--brand-steel)]"
-                }`}
-              >
+              <span className={`text-caption rounded-full border px-3 py-1 font-medium ${product.inStock ? "border-green-600 bg-green-50 text-green-700" : "border-[var(--brand-line)] text-[var(--brand-steel)]"}`}>
                 {product.inStock ? "In Stock" : "Contact for Availability"}
               </span>
               {reviewData.count > 0 && (
@@ -229,33 +186,19 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
                       Quantity
                     </label>
                     <div className="flex items-center rounded-[0.375rem] border border-[var(--brand-line)]">
-                      <button
-                        type="button"
-                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                        className="flex h-10 w-10 items-center justify-center text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
-                        aria-label="Decrease quantity"
-                      >
+                      <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="flex h-10 w-10 items-center justify-center text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]" aria-label="Decrease quantity">
                         −
                       </button>
                       <span className="text-body-sm flex h-10 w-10 items-center justify-center border-x border-[var(--brand-line)] font-medium text-[var(--brand-ink)]">
                         {quantity}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => setQuantity((q) => q + 1)}
-                        className="flex h-10 w-10 items-center justify-center text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]"
-                        aria-label="Increase quantity"
-                      >
+                      <button type="button" onClick={() => setQuantity((q) => q + 1)} className="flex h-10 w-10 items-center justify-center text-[var(--brand-steel)] transition-colors hover:text-[var(--brand-ink)]" aria-label="Increase quantity">
                         +
                       </button>
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleAddToCart}
-                    className="text-body-sm flex h-12 w-full items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
-                  >
+                  <button type="button" onClick={handleAddToCart} className="text-body-sm flex h-12 w-full items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90">
                     {justAdded ? (
                       <>
                         <Check className="size-4" /> Added to Cart
@@ -275,10 +218,7 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
                 </div>
               )}
 
-              <Link
-                href="/contact"
-                className="text-body-sm flex h-10 w-full items-center justify-center gap-2 rounded-[0.5rem] border border-[var(--brand-line)] font-medium text-[var(--brand-steel)] transition-colors hover:bg-[var(--brand-frost-dim)]"
-              >
+              <Link href="/contact" className="text-body-sm flex h-10 w-full items-center justify-center gap-2 rounded-[0.5rem] border border-[var(--brand-line)] font-medium text-[var(--brand-steel)] transition-colors hover:bg-[var(--brand-frost-dim)]">
                 <Mail className="size-4" /> Ask a Question
               </Link>
             </div>
@@ -443,11 +383,7 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
           </p>
           <div className="mt-6 flex justify-center">
             {product.inStock ? (
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                className="text-body-sm flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-white px-8 font-medium text-[var(--brand-ink)] transition-colors hover:opacity-90"
-              >
+              <button type="button" onClick={handleAddToCart} className="text-body-sm flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-white px-8 font-medium text-[var(--brand-ink)] transition-colors hover:opacity-90">
                 {justAdded ? (
                   <>
                     <Check className="size-4" /> Added to Cart
@@ -457,10 +393,7 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
                 )}
               </button>
             ) : (
-              <Link
-                href="/contact"
-                className="text-body-sm flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-white px-8 font-medium text-[var(--brand-ink)] transition-colors hover:opacity-90"
-              >
+              <Link href="/contact" className="text-body-sm flex h-12 items-center justify-center gap-2 rounded-[0.5rem] bg-white px-8 font-medium text-[var(--brand-ink)] transition-colors hover:opacity-90">
                 <Mail className="size-4" /> Contact Us
               </Link>
             )}
@@ -475,18 +408,11 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
             {formatCentsAsUsd(product.priceCents)}
           </span>
           {product.inStock ? (
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className="text-body-sm flex h-10 flex-1 max-w-[220px] items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
-            >
+            <button type="button" onClick={handleAddToCart} className="text-body-sm flex h-10 flex-1 max-w-[220px] items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90">
               {justAdded ? <Check className="size-4" /> : "Add to Cart"}
             </button>
           ) : (
-            <Link
-              href="/contact"
-              className="text-body-sm flex h-10 flex-1 max-w-[220px] items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90"
-            >
+            <Link href="/contact" className="text-body-sm flex h-10 flex-1 max-w-[220px] items-center justify-center gap-2 rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90">
               Contact Us
             </Link>
           )}
@@ -495,16 +421,8 @@ export function ProductDetailContent({ product, reviewData }: { product: Product
 
       {/* Lightbox */}
       {lightboxOpen && current?.type === "image" && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-          onClick={() => setLightboxOpen(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setLightboxOpen(false)}
-            className="absolute right-4 top-4 text-white"
-            aria-label="Close"
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" onClick={() => setLightboxOpen(false)}>
+          <button type="button" onClick={() => setLightboxOpen(false)} className="absolute right-4 top-4 text-white" aria-label="Close">
             <X className="size-8" />
           </button>
           <div className="relative h-full max-h-[85vh] w-full max-w-4xl">
