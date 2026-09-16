@@ -16,14 +16,7 @@ export default function AdminLoginPage() {
           <label htmlFor="password" className="text-body-sm mb-1.5 block font-medium text-[var(--brand-ink)]">
             Password
           </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoFocus
-            className="h-11 w-full rounded-[0.375rem] border border-[var(--brand-line)] bg-white px-3 text-body-sm text-[var(--brand-ink)] outline-none transition-colors focus:border-[var(--brand-ink)]"
-          />
+          <input id="password" name="password" type="password" required autoFocus className="h-11 w-full rounded-[0.375rem] border border-[var(--brand-line)] bg-white px-3 text-body-sm text-[var(--brand-ink)] outline-none transition-colors focus:border-[var(--brand-ink)]" />
         </div>
 
         {state?.error && (
@@ -32,11 +25,7 @@ export default function AdminLoginPage() {
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={isPending}
-          className="text-body-sm flex h-11 w-full items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90 disabled:opacity-60"
-        >
+        <button type="submit" disabled={isPending} className="text-body-sm flex h-11 w-full items-center justify-center rounded-[0.5rem] bg-[var(--brand-ink)] font-medium text-white transition-colors hover:opacity-90 disabled:opacity-60">
           {isPending ? "Signing in…" : "Sign in"}
         </button>
       </form>
