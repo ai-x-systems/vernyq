@@ -106,18 +106,12 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
           </span>
           <div className="flex gap-2">
             {page > 1 && (
-              <Link
-                href={`/admin/orders?${statusFilter ? `status=${statusFilter}&` : ""}page=${page - 1}`}
-                className="rounded-[0.375rem] border border-[var(--brand-line)] px-3 py-1.5 hover:bg-[var(--brand-frost-dim)]"
-              >
+              <Link href={`/admin/orders?${statusFilter ? `status=${statusFilter}&` : ""}page=${page - 1}`} className="rounded-[0.375rem] border border-[var(--brand-line)] px-3 py-1.5 hover:bg-[var(--brand-frost-dim)]">
                 Previous
               </Link>
             )}
             {page < totalPages && (
-              <Link
-                href={`/admin/orders?${statusFilter ? `status=${statusFilter}&` : ""}page=${page + 1}`}
-                className="rounded-[0.375rem] border border-[var(--brand-line)] px-3 py-1.5 hover:bg-[var(--brand-frost-dim)]"
-              >
+              <Link href={`/admin/orders?${statusFilter ? `status=${statusFilter}&` : ""}page=${page + 1}`} className="rounded-[0.375rem] border border-[var(--brand-line)] px-3 py-1.5 hover:bg-[var(--brand-frost-dim)]">
                 Next
               </Link>
             )}
@@ -130,14 +124,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
 
 function FilterLink({ label, active, href }: { label: string; active: boolean; href: string }) {
   return (
-    <Link
-      href={href}
-      className={`text-caption rounded-full border px-3 py-1 font-medium ${
-        active
-          ? "border-[var(--brand-ink)] bg-[var(--brand-ink)] text-white"
-          : "border-[var(--brand-line)] text-[var(--brand-steel)] hover:bg-[var(--brand-frost-dim)]"
-      }`}
-    >
+    <Link href={href} className={`text-caption rounded-full border px-3 py-1 font-medium ${active ? "border-[var(--brand-ink)] bg-[var(--brand-ink)] text-white" : "border-[var(--brand-line)] text-[var(--brand-steel)] hover:bg-[var(--brand-frost-dim)]"}`}>
       {label}
     </Link>
   );
